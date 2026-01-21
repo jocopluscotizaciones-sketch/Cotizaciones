@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JOCO PLUS - Cotizador Pro</title>
+    <title>JOCO PLUS - Cotizador Profesional</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -14,7 +14,7 @@
         body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
         .hidden { display: none !important; }
         .btn-action { transition: all 0.3s ease; }
-        .btn-action:active { transform: scale(0.96); }
+        .btn-action:active { transform: scale(0.95); }
     </style>
 </head>
 <body class="h-screen overflow-hidden flex flex-col">
@@ -64,7 +64,7 @@
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
-                        <input type="number" id="valor" class="w-full p-4 bg-gray-100 rounded-2xl font-black text-blue-600 outline-none" readonly>
+                        <input type="number" id="valor" class="w-full p-4 bg-gray-100 rounded-2xl font-black text-blue-600 outline-none" readonly placeholder="Precio">
                         <input type="number" id="inicial" class="w-full p-4 border border-gray-100 rounded-2xl outline-none" placeholder="Cuota Inicial">
                     </div>
 
@@ -75,8 +75,9 @@
                 </div>
 
                 <div class="lg:col-span-5 space-y-4">
-                    <div class="bg-gray-900 text-white p-10 rounded-[2.5rem] shadow-xl">
-                        <p class="text-xs text-gray-400 font-bold uppercase tracking-widest mb-2">Pago Mensual</p>
+                    <div class="bg-gray-900 text-white p-10 rounded-[2.5rem] shadow-xl relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-6 opacity-10 font-black text-6xl italic">JP</div>
+                        <p class="text-xs text-gray-400 font-bold uppercase tracking-widest mb-2">Mensualidad</p>
                         <p class="text-5xl font-black italic text-blue-400 tracking-tighter" id="res-cuota">$ 0</p>
                         <div class="mt-8 pt-6 border-t border-gray-800 flex justify-between">
                             <div><p class="text-[10px] text-gray-500 font-bold uppercase">Financiado</p><p class="text-lg font-bold" id="res-financiar">$ 0</p></div>
@@ -99,11 +100,17 @@
     </div>
 
     <script>
-        // CONFIGURACIÓN ACTUALIZADA CON TUS DATOS
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzd5VSCfZq9acE4nyf0TF8JOc58QWbFnR0tb3ActFvqpyPirAdB7N6HyfVWX-L65I-q/exec";
+        // CONFIGURACIÓN ACTUALIZADA
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbykMi6RcTjO0KwRup46eXCyBHQaI2-Tzl6bYWklFPPW0Tu5y1rLawYG2NqoCUhKSDGp/exec";
         const SHEET_URL = "https://docs.google.com/spreadsheets/d/1BE1h5UZaWqFYMDWxY73z2bAzcriQMXx6pl677YF6kVo/export?format=csv";
         
-        const asesores = { "Jhonathan Cortavarria": "1985", "Luis Cortavarria": "0000", "Nataly Cortavarria": "0219", "Gleydis Rodriguez": "1508" };
+        const asesores = { 
+            "Jhonathan Cortavarria": "1985", 
+            "Luis Cortavarria": "0000", 
+            "Nataly Cortavarria": "0219", 
+            "Gleydis Rodriguez": "1508" 
+        };
+        
         let asesorActual = "";
 
         function iniciarSesion() {
@@ -134,7 +141,7 @@
                             select.appendChild(opt);
                         }
                     });
-                    document.getElementById('loading-status').innerText = "✓ DATOS CARGADOS";
+                    document.getElementById('loading-status').innerText = "✓ LISTA ACTUALIZADA";
                 }
             });
         }
@@ -159,19 +166,34 @@
             calcular();
         });
 
-        // DESCARGA LOCAL
+        // DESCARGA PDF LOCAL (DISEÑO PROFESIONAL)
         function descargarPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             const cliente = document.getElementById('cliente').value || "Cliente";
             const prod = document.getElementById('producto-select').options[document.getElementById('producto-select').selectedIndex].text;
 
-            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 40, 'F');
-            doc.setTextColor(255); doc.setFontSize(22); doc.text("JOCO PLUS", 15, 25);
-            doc.setFontSize(10); doc.text(`Asesor: ${asesorActual}`, 195, 25, {align:'right'});
+            // Header con Logo
+            doc.setFillColor(0, 0, 0); 
+            doc.rect(15, 15, 20, 20, 'F'); 
+            doc.setTextColor(255);
+            doc.setFontSize(14);
+            doc.text("JP", 20, 28);
 
+            doc.setTextColor(0);
+            doc.setFontSize(22);
+            doc.setFont("helvetica", "bold");
+            doc.text("JOCO PLUS", 40, 25);
+            
+            doc.setFontSize(9);
+            doc.setFont("helvetica", "normal");
+            doc.setTextColor(100);
+            doc.text("COTIZACIÓN OFICIAL", 40, 31);
+            doc.text(`Fecha: ${new Date().toLocaleDateString()}`, 195, 25, {align:'right'});
+
+            // Tabla
             doc.autoTable({
-                startY: 50,
+                startY: 45,
                 head: [['DESCRIPCIÓN', 'DETALLE']],
                 body: [
                     ['CLIENTE', cliente.toUpperCase()],
@@ -182,15 +204,29 @@
                     ['PLAZO', `${document.getElementById('meses').value} Meses`],
                     ['CUOTA MENSUAL', document.getElementById('res-cuota').innerText]
                 ],
-                headStyles: { fillColor: [15, 23, 42] }
+                theme: 'striped',
+                headStyles: { fillColor: [0, 0, 0] }
             });
-            doc.save(`Cotizacion_${cliente.replace(/\s/g, '_')}.pdf`);
+
+            // Mensaje y Derechos
+            const finalY = doc.lastAutoTable.finalY + 20;
+            doc.setFont("helvetica", "italic");
+            doc.setTextColor(0);
+            doc.text("¡Gracias por confiar en JOCO PLUS!", 105, finalY, {align: 'center'});
+            doc.text("Esperamos que estrenes pronto.", 105, finalY + 7, {align: 'center'});
+
+            doc.setFontSize(8);
+            doc.setTextColor(150);
+            doc.setFont("helvetica", "normal");
+            doc.text("© 2024 JOCO PLUS. Todos los derechos reservados.", 105, 285, {align: 'center'});
+
+            doc.save(`Cotizacion_JocoPlus_${cliente.replace(/\s/g, '_')}.pdf`);
         }
 
-        // ENVÍO CON PDF ADJUNTO (G-SCRIPT)
+        // ENVÍO POR GOOGLE (PDF AUTOMÁTICO)
         async function enviarPorGoogle() {
             const email = document.getElementById('email-cliente').value;
-            if (!email.includes('@')) { alert("Ingresa un correo válido"); return; }
+            if (!email.includes('@')) { alert("Correo inválido"); return; }
             
             const btn = document.getElementById('btn-email');
             btn.disabled = true; 
@@ -208,8 +244,8 @@
 
             try {
                 await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-                alert("✅ ¡Cotización enviada con PDF adjunto a " + email);
-            } catch (e) { alert("Error al conectar con el servidor de correo."); }
+                alert("✅ Cotización enviada con PDF adjunto.");
+            } catch (e) { alert("Error de servidor"); }
             
             btn.disabled = false; 
             btn.innerHTML = "<span class='text-xl'>📧</span> ENVIAR CORREO CON PDF";
