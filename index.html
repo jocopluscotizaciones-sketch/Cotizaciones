@@ -19,7 +19,7 @@
     <div id="login-view" class="flex-1 flex flex-col justify-center items-center p-4 bg-slate-900">
         <div class="bg-white p-10 rounded-[2.5rem] shadow-2xl w-full max-w-sm text-center">
             <div class="inline-block bg-black text-white px-4 py-2 rounded-lg text-2xl font-black mb-4 italic">JP</div>
-            <h1 class="text-3xl font-black mb-8 tracking-tighter">JOCO PLUS</h1>
+            <h1 class="text-3xl font-black mb-8 tracking-tighter text-gray-900">JOCO PLUS</h1>
             <div class="space-y-4">
                 <select id="user-select" class="w-full p-4 border rounded-xl font-semibold outline-none focus:ring-2 focus:ring-blue-600">
                     <option value="" disabled selected>Seleccionar Asesor</option>
@@ -29,7 +29,7 @@
                     <option value="Gleydis Rodriguez">Gleydis Rodriguez</option>
                 </select>
                 <input type="password" id="password-input" class="w-full p-4 border rounded-xl text-center tracking-widest outline-none focus:ring-2 focus:ring-blue-600" placeholder="PIN">
-                <button onclick="iniciarSesion()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl hover:bg-blue-700">ENTRAR</button>
+                <button onclick="iniciarSesion()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl hover:bg-blue-700 shadow-lg">ENTRAR</button>
             </div>
         </div>
     </div>
@@ -41,56 +41,87 @@
                 <span class="font-black tracking-tighter text-xl">JOCO PLUS</span>
             </div>
             <div class="flex items-center gap-4">
-                <span id="loading-status" class="text-[10px] font-bold text-blue-500 uppercase tracking-widest">Iniciando...</span>
-                <button onclick="location.reload()" class="text-red-500 text-xs font-bold uppercase hover:underline">Salir</button>
+                <span id="loading-status" class="text-[10px] font-bold text-blue-500 uppercase tracking-widest">Sincronizando...</span>
+                <button onclick="location.reload()" class="text-red-500 text-xs font-bold uppercase hover:underline font-bold">Salir</button>
             </div>
         </nav>
 
         <main class="flex-1 overflow-auto p-6">
             <div class="max-w-5xl mx-auto grid lg:grid-cols-12 gap-8">
                 
-                <div class="lg:col-span-7 bg-white p-8 rounded-3xl shadow-sm space-y-6">
+                <div class="lg:col-span-7 bg-white p-8 rounded-3xl shadow-sm space-y-6 border border-gray-100">
                     <div>
                         <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Artículo / Producto</label>
                         <select id="producto-select" class="w-full mt-1 p-4 bg-gray-50 border-none rounded-2xl font-bold text-gray-700 outline-none focus:ring-2 focus:ring-blue-500"></select>
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
-                        <input type="text" id="cliente" class="w-full p-4 border border-gray-100 rounded-2xl outline-none focus:border-blue-500" placeholder="Nombre Cliente">
-                        <input type="email" id="email-cliente" class="w-full p-4 border border-gray-100 rounded-2xl outline-none focus:border-blue-500" placeholder="Correo Cliente">
+                        <div>
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Nombre del Cliente</label>
+                            <input type="text" id="cliente" class="w-full mt-1 p-4 border border-gray-100 rounded-2xl outline-none focus:border-blue-500" placeholder="Ej: Juan Pérez">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Correo del Cliente</label>
+                            <input type="email" id="email-cliente" class="w-full mt-1 p-4 border border-gray-100 rounded-2xl outline-none focus:border-blue-500" placeholder="cliente@correo.com">
+                        </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
-                        <input type="number" id="valor" class="w-full p-4 bg-gray-100 rounded-2xl font-black text-blue-600 outline-none" readonly placeholder="Precio">
-                        <input type="number" id="inicial" class="w-full p-4 border border-gray-100 rounded-2xl outline-none" placeholder="Cuota Inicial">
+                        <div>
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Precio Venta</label>
+                            <input type="number" id="valor" class="w-full mt-1 p-4 bg-gray-100 rounded-2xl font-black text-blue-600 outline-none" readonly>
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Cuota Inicial</label>
+                            <input type="number" id="inicial" class="w-full mt-1 p-4 border border-gray-100 rounded-2xl outline-none focus:border-blue-500">
+                        </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
-                        <input type="number" id="interes" value="2.5" class="w-full p-4 border border-gray-100 rounded-2xl outline-none" placeholder="Interés %">
-                        <input type="number" id="meses" value="12" class="w-full p-4 border border-gray-100 rounded-2xl outline-none" placeholder="Meses">
+                        <div>
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Interés Mensual %</label>
+                            <input type="number" step="0.01" id="interes" value="2.5" class="w-full mt-1 p-4 border border-gray-100 rounded-2xl outline-none focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Plazo (Meses)</label>
+                            <input type="number" id="meses" value="12" class="w-full mt-1 p-4 border border-gray-100 rounded-2xl outline-none focus:border-blue-500">
+                        </div>
                     </div>
                 </div>
 
                 <div class="lg:col-span-5 space-y-4">
-                    <div class="bg-gray-900 text-white p-10 rounded-[2.5rem] shadow-xl">
-                        <p class="text-xs text-gray-400 font-bold uppercase mb-2">Mensualidad</p>
-                        <p class="text-5xl font-black italic text-blue-400" id="res-cuota">$ 0</p>
+                    <div class="bg-gray-900 text-white p-10 rounded-[2.5rem] shadow-xl relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-6 opacity-10 font-black text-6xl italic">JP</div>
+                        <p class="text-xs text-gray-400 font-bold uppercase tracking-widest mb-2">Pago Mensual</p>
+                        <p class="text-5xl font-black italic text-blue-400 tracking-tighter" id="res-cuota">$ 0</p>
                         <div class="mt-8 pt-6 border-t border-gray-800 flex justify-between">
-                            <div><p class="text-[10px] text-gray-500 font-bold uppercase">Financiado</p><p class="text-lg font-bold" id="res-financiar">$ 0</p></div>
-                            <div class="text-right"><p class="text-[10px] text-gray-500 font-bold uppercase">Plazo</p><p class="text-lg font-bold" id="res-meses-txt">12</p></div>
+                            <div>
+                                <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Saldo a Financiar</p>
+                                <p class="text-lg font-bold" id="res-financiar">$ 0</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Meses</p>
+                                <p class="text-lg font-bold" id="res-meses-txt">12</p>
+                            </div>
                         </div>
                     </div>
-                    <button id="btn-main" onclick="enviarPorGoogle()" class="btn-enviar w-full bg-blue-600 text-white font-black py-5 rounded-2xl shadow-xl hover:bg-blue-700">
-                        📧 ENVIAR COTIZACIÓN OFICIAL
+
+                    <button id="btn-main" onclick="enviarPorGoogle()" class="btn-enviar w-full bg-blue-600 text-white font-black py-5 rounded-2xl shadow-xl shadow-blue-500/30 flex items-center justify-center gap-3 hover:bg-blue-700">
+                        <span class="text-xl">📧</span> ENVIAR COTIZACIÓN OFICIAL
                     </button>
+                    
+                    <div class="p-4 bg-blue-50 rounded-xl border border-blue-100">
+                        <p class="text-[10px] text-blue-700 font-bold uppercase mb-1 italic">Envío Automático</p>
+                        <p class="text-[10px] text-blue-600 leading-tight">La cotización llegará al correo del cliente desde tu servidor de Google de forma gratuita.</p>
+                    </div>
                 </div>
             </div>
         </main>
     </div>
 
     <script>
-        // URL generada con tu ID de implementación
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxsxtstd3_8NDqB0rQ9xoXn9ZbEVlMkY2BBW_aiD3k-nXcQh_eJ7qg94jccYkx0awrP/exec";
+        // URL E ID ACTUALIZADOS
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzRHRQz4znSLh1uguXGkALgHTHqV_pD9TKm2QOOZGkyWeF7OiHebz7b5OYLV6m8ng-S/exec";
         const SHEET_URL = "https://docs.google.com/spreadsheets/d/1BE1h5UZaWqFYMDWxY73z2bAzcriQMXx6pl677YF6kVo/export?format=csv";
         
         const asesores = { 
@@ -110,7 +141,7 @@
                 document.getElementById('login-view').classList.add('hidden');
                 document.getElementById('app-view').classList.replace('hidden', 'flex');
                 conectarDB();
-            } else { alert("PIN Incorrecto"); }
+            } else { alert("PIN de seguridad incorrecto."); }
         }
 
         function conectarDB() {
@@ -172,7 +203,7 @@
             if (!email.includes('@')) { alert("Por favor, ingresa un correo válido"); return; }
             
             btn.disabled = true;
-            btn.innerText = "Enviando...";
+            btn.innerText = "Procesando...";
             
             const payload = {
                 email: email,
@@ -185,7 +216,7 @@
             };
 
             try {
-                // El modo 'no-cors' es necesario para Google Apps Script
+                // Modo 'no-cors' para evitar bloqueos del navegador con Google Scripts
                 await fetch(GOOGLE_SCRIPT_URL, { 
                     method: 'POST', 
                     mode: 'no-cors', 
