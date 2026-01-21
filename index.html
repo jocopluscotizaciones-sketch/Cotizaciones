@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JOCO PLUS - Cotizador</title>
+    <title>JOCO PLUS - Cotizador Oficial</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
         .hidden { display: none !important; }
+        .btn-enviar { transition: all 0.3s ease; }
+        .btn-enviar:active { transform: scale(0.96); }
     </style>
 </head>
 <body class="h-screen overflow-hidden flex flex-col">
@@ -49,7 +51,7 @@
                 
                 <div class="lg:col-span-7 bg-white p-8 rounded-3xl shadow-sm space-y-6">
                     <div>
-                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Producto</label>
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Artículo / Producto</label>
                         <select id="producto-select" class="w-full mt-1 p-4 bg-gray-50 border-none rounded-2xl font-bold text-gray-700 outline-none focus:ring-2 focus:ring-blue-500"></select>
                     </div>
 
@@ -78,8 +80,8 @@
                             <div class="text-right"><p class="text-[10px] text-gray-500 font-bold uppercase">Plazo</p><p class="text-lg font-bold" id="res-meses-txt">12</p></div>
                         </div>
                     </div>
-                    <button id="btn-main" onclick="enviarPorGoogle()" class="w-full bg-blue-600 text-white font-black py-5 rounded-2xl shadow-xl hover:bg-blue-700">
-                        📧 ENVIAR COTIZACIÓN
+                    <button id="btn-main" onclick="enviarPorGoogle()" class="btn-enviar w-full bg-blue-600 text-white font-black py-5 rounded-2xl shadow-xl hover:bg-blue-700">
+                        📧 ENVIAR COTIZACIÓN OFICIAL
                     </button>
                 </div>
             </div>
@@ -87,9 +89,17 @@
     </div>
 
     <script>
+        // URL generada con tu ID de implementación
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxsxtstd3_8NDqB0rQ9xoXn9ZbEVlMkY2BBW_aiD3k-nXcQh_eJ7qg94jccYkx0awrP/exec";
         const SHEET_URL = "https://docs.google.com/spreadsheets/d/1BE1h5UZaWqFYMDWxY73z2bAzcriQMXx6pl677YF6kVo/export?format=csv";
-        const asesores = { "Jhonathan Cortavarria": "1985", "Luis Cortavarria": "0000", "Nataly Cortavarria": "0219", "Gleydis Rodriguez": "1508" };
+        
+        const asesores = { 
+            "Jhonathan Cortavarria": "1985", 
+            "Luis Cortavarria": "0000", 
+            "Nataly Cortavarria": "0219", 
+            "Gleydis Rodriguez": "1508" 
+        };
+        
         let asesorActual = "";
 
         function iniciarSesion() {
@@ -105,7 +115,7 @@
 
         function conectarDB() {
             const status = document.getElementById('loading-status');
-            status.innerText = "CONECTANDO...";
+            status.innerText = "Sincronizando Excel...";
             
             Papa.parse(SHEET_URL, {
                 download: true,
@@ -116,7 +126,6 @@
                     select.innerHTML = '<option value="0" disabled selected>Seleccionar Producto...</option>';
                     
                     results.data.forEach(item => {
-                        // Buscamos columnas ignorando mayúsculas/minúsculas
                         const keys = Object.keys(item);
                         const colNombre = keys.find(k => k.toLowerCase().includes('articulo') || k.toLowerCase().includes('producto'));
                         const colValor = keys.find(k => k.toLowerCase().includes('valor') || k.toLowerCase().includes('precio'));
@@ -128,7 +137,7 @@
                             select.appendChild(opt);
                         }
                     });
-                    status.innerText = "✓ SISTEMA LISTO";
+                    status.innerText = "✓ Lista Actualizada";
                 }
             });
         }
@@ -139,13 +148,19 @@
             const financiar = valor - inicial;
             const tasa = (parseFloat(document.getElementById('interes').value) || 0) / 100;
             const meses = parseInt(document.getElementById('meses').value) || 0;
-            let cuota = (financiar > 0 && meses > 0) ? (tasa === 0 ? financiar / meses : financiar * ((tasa * Math.pow(1 + tasa, meses)) / (Math.pow(1 + tasa, meses) - 1))) : 0;
+            
+            let cuota = 0;
+            if (financiar > 0 && meses > 0) {
+                cuota = (tasa === 0) ? financiar / meses : financiar * ((tasa * Math.pow(1 + tasa, meses)) / (Math.pow(1 + tasa, meses) - 1));
+            }
+            
             document.getElementById('res-financiar').innerText = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(financiar);
             document.getElementById('res-cuota').innerText = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(cuota);
             document.getElementById('res-meses-txt').innerText = meses;
         }
 
         ['valor', 'inicial', 'interes', 'meses'].forEach(id => document.getElementById(id).addEventListener('input', calcular));
+        
         document.getElementById('producto-select').addEventListener('change', function() {
             document.getElementById('valor').value = this.value;
             calcular();
@@ -154,9 +169,10 @@
         async function enviarPorGoogle() {
             const btn = document.getElementById('btn-main');
             const email = document.getElementById('email-cliente').value;
-            if (!email.includes('@')) { alert("Correo inválido"); return; }
+            if (!email.includes('@')) { alert("Por favor, ingresa un correo válido"); return; }
             
-            btn.disabled = true; btn.innerText = "PROCESANDO...";
+            btn.disabled = true;
+            btn.innerText = "Enviando...";
             
             const payload = {
                 email: email,
@@ -169,10 +185,18 @@
             };
 
             try {
-                await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-                alert("✅ Cotización enviada a " + email);
-            } catch (e) { alert("Error de conexión"); }
-            btn.disabled = false; btn.innerText = "📧 ENVIAR COTIZACIÓN";
+                // El modo 'no-cors' es necesario para Google Apps Script
+                await fetch(GOOGLE_SCRIPT_URL, { 
+                    method: 'POST', 
+                    mode: 'no-cors', 
+                    body: JSON.stringify(payload) 
+                });
+                alert("✅ ¡Éxito! La cotización ha sido enviada al correo.");
+            } catch (e) { 
+                alert("Error de conexión con el servidor."); 
+            }
+            btn.disabled = false;
+            btn.innerText = "📧 ENVIAR COTIZACIÓN OFICIAL";
         }
     </script>
 </body>
