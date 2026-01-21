@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JOCO PLUS - Cotizador Oficial</title>
+    <title>JOCO PLUS - Cotizador Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -44,7 +44,7 @@
                 <span class="font-black tracking-tighter text-xl uppercase">Joco Plus</span>
             </div>
             <div class="flex items-center gap-4">
-                <span id="loading-status" class="text-[10px] font-bold text-blue-500 uppercase tracking-widest">Conectando...</span>
+                <span id="loading-status" class="text-[10px] font-bold text-blue-500 uppercase tracking-widest">Sincronizando...</span>
                 <button onclick="location.reload()" class="text-red-500 text-xs font-bold uppercase hover:underline">Salir</button>
             </div>
         </nav>
@@ -54,7 +54,7 @@
                 
                 <div class="lg:col-span-7 bg-white p-8 rounded-3xl shadow-sm space-y-6 border border-gray-100">
                     <div>
-                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Artículo / Producto</label>
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Producto</label>
                         <select id="producto-select" class="w-full mt-1 p-4 bg-gray-50 border-none rounded-2xl font-bold text-gray-700 outline-none focus:ring-2 focus:ring-blue-500"></select>
                     </div>
 
@@ -75,22 +75,22 @@
                 </div>
 
                 <div class="lg:col-span-5 space-y-4">
-                    <div class="bg-gray-900 text-white p-10 rounded-[2.5rem] shadow-xl relative overflow-hidden">
+                    <div class="bg-gray-900 text-white p-10 rounded-[2.5rem] shadow-xl">
                         <p class="text-xs text-gray-400 font-bold uppercase tracking-widest mb-2">Pago Mensual</p>
                         <p class="text-5xl font-black italic text-blue-400 tracking-tighter" id="res-cuota">$ 0</p>
                         <div class="mt-8 pt-6 border-t border-gray-800 flex justify-between">
-                            <div><p class="text-[10px] text-gray-500 font-bold uppercase">A Financiar</p><p class="text-lg font-bold" id="res-financiar">$ 0</p></div>
+                            <div><p class="text-[10px] text-gray-500 font-bold uppercase">Financiado</p><p class="text-lg font-bold" id="res-financiar">$ 0</p></div>
                             <div class="text-right"><p class="text-[10px] text-gray-500 font-bold uppercase">Plazo</p><p class="text-lg font-bold" id="res-meses-txt">12</p></div>
                         </div>
                     </div>
 
                     <div class="grid gap-3">
                         <button id="btn-email" onclick="enviarPorGoogle()" class="btn-action w-full bg-blue-600 text-white font-black py-5 rounded-2xl shadow-lg flex items-center justify-center gap-3 hover:bg-blue-700">
-                            <span class="text-xl">📧</span> ENVIAR CORREO AUTOMÁTICO
+                            <span class="text-xl">📧</span> ENVIAR CORREO CON PDF
                         </button>
 
                         <button onclick="descargarPDF()" class="btn-action w-full bg-slate-100 text-slate-800 font-black py-4 rounded-2xl flex items-center justify-center gap-3 hover:bg-slate-200 border border-slate-200">
-                            <span class="text-xl">📄</span> DESCARGAR PDF COTIZACIÓN
+                            <span class="text-xl">📄</span> DESCARGAR PDF LOCAL
                         </button>
                     </div>
                 </div>
@@ -99,8 +99,10 @@
     </div>
 
     <script>
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzRHRQz4znSLh1uguXGkALgHTHqV_pD9TKm2QOOZGkyWeF7OiHebz7b5OYLV6m8ng-S/exec";
+        // CONFIGURACIÓN ACTUALIZADA CON TUS DATOS
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzd5VSCfZq9acE4nyf0TF8JOc58QWbFnR0tb3ActFvqpyPirAdB7N6HyfVWX-L65I-q/exec";
         const SHEET_URL = "https://docs.google.com/spreadsheets/d/1BE1h5UZaWqFYMDWxY73z2bAzcriQMXx6pl677YF6kVo/export?format=csv";
+        
         const asesores = { "Jhonathan Cortavarria": "1985", "Luis Cortavarria": "0000", "Nataly Cortavarria": "0219", "Gleydis Rodriguez": "1508" };
         let asesorActual = "";
 
@@ -112,7 +114,7 @@
                 document.getElementById('login-view').classList.add('hidden');
                 document.getElementById('app-view').classList.replace('hidden', 'flex');
                 conectarDB();
-            } else { alert("PIN incorrecto"); }
+            } else { alert("PIN Incorrecto"); }
         }
 
         function conectarDB() {
@@ -132,7 +134,7 @@
                             select.appendChild(opt);
                         }
                     });
-                    document.getElementById('loading-status').innerText = "✓ LISTA ACTUALIZADA";
+                    document.getElementById('loading-status').innerText = "✓ DATOS CARGADOS";
                 }
             });
         }
@@ -157,43 +159,42 @@
             calcular();
         });
 
-        // FUNCIÓN DESCARGAR PDF
+        // DESCARGA LOCAL
         function descargarPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             const cliente = document.getElementById('cliente').value || "Cliente";
             const prod = document.getElementById('producto-select').options[document.getElementById('producto-select').selectedIndex].text;
 
-            // Cabecera Negra
-            doc.setFillColor(0, 0, 0); doc.rect(0, 0, 210, 40, 'F');
+            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 40, 'F');
             doc.setTextColor(255); doc.setFontSize(22); doc.text("JOCO PLUS", 15, 25);
             doc.setFontSize(10); doc.text(`Asesor: ${asesorActual}`, 195, 25, {align:'right'});
 
-            // Contenido
             doc.autoTable({
                 startY: 50,
-                head: [['CONCEPTO', 'DETALLE']],
+                head: [['DESCRIPCIÓN', 'DETALLE']],
                 body: [
                     ['CLIENTE', cliente.toUpperCase()],
-                    ['ARTÍCULO', prod],
-                    ['PRECIO VENTA', formatCop(document.getElementById('valor').value)],
-                    ['CUOTA INICIAL', formatCop(document.getElementById('inicial').value)],
-                    ['SALDO FINANCIADO', document.getElementById('res-financiar').innerText],
+                    ['PRODUCTO', prod],
+                    ['VALOR TOTAL', formatCop(document.getElementById('valor').value)],
+                    ['INICIAL', formatCop(document.getElementById('inicial').value)],
+                    ['FINANCIADO', document.getElementById('res-financiar').innerText],
                     ['PLAZO', `${document.getElementById('meses').value} Meses`],
-                    ['PAGO MENSUAL', document.getElementById('res-cuota').innerText]
+                    ['CUOTA MENSUAL', document.getElementById('res-cuota').innerText]
                 ],
-                theme: 'striped', headStyles: { fillColor: [0, 0, 0] }
+                headStyles: { fillColor: [15, 23, 42] }
             });
-
-            doc.save(`Cotizacion_JocoPlus_${cliente.replace(/\s/g, '_')}.pdf`);
+            doc.save(`Cotizacion_${cliente.replace(/\s/g, '_')}.pdf`);
         }
 
-        // FUNCIÓN ENVIAR CORREO
+        // ENVÍO CON PDF ADJUNTO (G-SCRIPT)
         async function enviarPorGoogle() {
             const email = document.getElementById('email-cliente').value;
             if (!email.includes('@')) { alert("Ingresa un correo válido"); return; }
+            
             const btn = document.getElementById('btn-email');
-            btn.disabled = true; btn.innerText = "ENVIANDO...";
+            btn.disabled = true; 
+            btn.innerHTML = "📄 GENERANDO PDF Y ENVIANDO...";
 
             const payload = {
                 email: email,
@@ -207,9 +208,11 @@
 
             try {
                 await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-                alert("✅ ¡Éxito! Cotización enviada al correo.");
-            } catch (e) { alert("Error de servidor"); }
-            btn.disabled = false; btn.innerText = "📧 ENVIAR CORREO AUTOMÁTICO";
+                alert("✅ ¡Cotización enviada con PDF adjunto a " + email);
+            } catch (e) { alert("Error al conectar con el servidor de correo."); }
+            
+            btn.disabled = false; 
+            btn.innerHTML = "<span class='text-xl'>📧</span> ENVIAR CORREO CON PDF";
         }
     </script>
 </body>
