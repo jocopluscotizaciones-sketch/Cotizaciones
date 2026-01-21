@@ -6,12 +6,15 @@
     <title>JOCO PLUS - Cotizador Oficial</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
         .hidden { display: none !important; }
-        .btn-enviar { transition: all 0.3s ease; }
-        .btn-enviar:active { transform: scale(0.96); }
+        .btn-action { transition: all 0.3s ease; }
+        .btn-action:active { transform: scale(0.96); }
     </style>
 </head>
 <body class="h-screen overflow-hidden flex flex-col">
@@ -38,11 +41,11 @@
         <nav class="bg-white border-b px-8 py-4 flex justify-between items-center">
             <div class="flex items-center gap-2">
                 <div class="bg-black text-white px-2 py-1 rounded font-black italic">JP</div>
-                <span class="font-black tracking-tighter text-xl">JOCO PLUS</span>
+                <span class="font-black tracking-tighter text-xl uppercase">Joco Plus</span>
             </div>
             <div class="flex items-center gap-4">
-                <span id="loading-status" class="text-[10px] font-bold text-blue-500 uppercase tracking-widest">Sincronizando...</span>
-                <button onclick="location.reload()" class="text-red-500 text-xs font-bold uppercase hover:underline font-bold">Salir</button>
+                <span id="loading-status" class="text-[10px] font-bold text-blue-500 uppercase tracking-widest">Conectando...</span>
+                <button onclick="location.reload()" class="text-red-500 text-xs font-bold uppercase hover:underline">Salir</button>
             </div>
         </nav>
 
@@ -56,63 +59,39 @@
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Nombre del Cliente</label>
-                            <input type="text" id="cliente" class="w-full mt-1 p-4 border border-gray-100 rounded-2xl outline-none focus:border-blue-500" placeholder="Ej: Juan Pérez">
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Correo del Cliente</label>
-                            <input type="email" id="email-cliente" class="w-full mt-1 p-4 border border-gray-100 rounded-2xl outline-none focus:border-blue-500" placeholder="cliente@correo.com">
-                        </div>
+                        <input type="text" id="cliente" class="w-full p-4 border border-gray-100 rounded-2xl outline-none" placeholder="Nombre Cliente">
+                        <input type="email" id="email-cliente" class="w-full p-4 border border-gray-100 rounded-2xl outline-none" placeholder="Correo Cliente">
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Precio Venta</label>
-                            <input type="number" id="valor" class="w-full mt-1 p-4 bg-gray-100 rounded-2xl font-black text-blue-600 outline-none" readonly>
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Cuota Inicial</label>
-                            <input type="number" id="inicial" class="w-full mt-1 p-4 border border-gray-100 rounded-2xl outline-none focus:border-blue-500">
-                        </div>
+                        <input type="number" id="valor" class="w-full p-4 bg-gray-100 rounded-2xl font-black text-blue-600 outline-none" readonly>
+                        <input type="number" id="inicial" class="w-full p-4 border border-gray-100 rounded-2xl outline-none" placeholder="Cuota Inicial">
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Interés Mensual %</label>
-                            <input type="number" step="0.01" id="interes" value="2.5" class="w-full mt-1 p-4 border border-gray-100 rounded-2xl outline-none focus:border-blue-500">
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Plazo (Meses)</label>
-                            <input type="number" id="meses" value="12" class="w-full mt-1 p-4 border border-gray-100 rounded-2xl outline-none focus:border-blue-500">
-                        </div>
+                        <input type="number" step="0.01" id="interes" value="2.5" class="w-full p-4 border border-gray-100 rounded-2xl outline-none" placeholder="Interés %">
+                        <input type="number" id="meses" value="12" class="w-full p-4 border border-gray-100 rounded-2xl outline-none" placeholder="Meses">
                     </div>
                 </div>
 
                 <div class="lg:col-span-5 space-y-4">
                     <div class="bg-gray-900 text-white p-10 rounded-[2.5rem] shadow-xl relative overflow-hidden">
-                        <div class="absolute top-0 right-0 p-6 opacity-10 font-black text-6xl italic">JP</div>
                         <p class="text-xs text-gray-400 font-bold uppercase tracking-widest mb-2">Pago Mensual</p>
                         <p class="text-5xl font-black italic text-blue-400 tracking-tighter" id="res-cuota">$ 0</p>
                         <div class="mt-8 pt-6 border-t border-gray-800 flex justify-between">
-                            <div>
-                                <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Saldo a Financiar</p>
-                                <p class="text-lg font-bold" id="res-financiar">$ 0</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Meses</p>
-                                <p class="text-lg font-bold" id="res-meses-txt">12</p>
-                            </div>
+                            <div><p class="text-[10px] text-gray-500 font-bold uppercase">A Financiar</p><p class="text-lg font-bold" id="res-financiar">$ 0</p></div>
+                            <div class="text-right"><p class="text-[10px] text-gray-500 font-bold uppercase">Plazo</p><p class="text-lg font-bold" id="res-meses-txt">12</p></div>
                         </div>
                     </div>
 
-                    <button id="btn-main" onclick="enviarPorGoogle()" class="btn-enviar w-full bg-blue-600 text-white font-black py-5 rounded-2xl shadow-xl shadow-blue-500/30 flex items-center justify-center gap-3 hover:bg-blue-700">
-                        <span class="text-xl">📧</span> ENVIAR COTIZACIÓN OFICIAL
-                    </button>
-                    
-                    <div class="p-4 bg-blue-50 rounded-xl border border-blue-100">
-                        <p class="text-[10px] text-blue-700 font-bold uppercase mb-1 italic">Envío Automático</p>
-                        <p class="text-[10px] text-blue-600 leading-tight">La cotización llegará al correo del cliente desde tu servidor de Google de forma gratuita.</p>
+                    <div class="grid gap-3">
+                        <button id="btn-email" onclick="enviarPorGoogle()" class="btn-action w-full bg-blue-600 text-white font-black py-5 rounded-2xl shadow-lg flex items-center justify-center gap-3 hover:bg-blue-700">
+                            <span class="text-xl">📧</span> ENVIAR CORREO AUTOMÁTICO
+                        </button>
+
+                        <button onclick="descargarPDF()" class="btn-action w-full bg-slate-100 text-slate-800 font-black py-4 rounded-2xl flex items-center justify-center gap-3 hover:bg-slate-200 border border-slate-200">
+                            <span class="text-xl">📄</span> DESCARGAR PDF COTIZACIÓN
+                        </button>
                     </div>
                 </div>
             </div>
@@ -120,17 +99,9 @@
     </div>
 
     <script>
-        // URL E ID ACTUALIZADOS
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzRHRQz4znSLh1uguXGkALgHTHqV_pD9TKm2QOOZGkyWeF7OiHebz7b5OYLV6m8ng-S/exec";
         const SHEET_URL = "https://docs.google.com/spreadsheets/d/1BE1h5UZaWqFYMDWxY73z2bAzcriQMXx6pl677YF6kVo/export?format=csv";
-        
-        const asesores = { 
-            "Jhonathan Cortavarria": "1985", 
-            "Luis Cortavarria": "0000", 
-            "Nataly Cortavarria": "0219", 
-            "Gleydis Rodriguez": "1508" 
-        };
-        
+        const asesores = { "Jhonathan Cortavarria": "1985", "Luis Cortavarria": "0000", "Nataly Cortavarria": "0219", "Gleydis Rodriguez": "1508" };
         let asesorActual = "";
 
         function iniciarSesion() {
@@ -141,26 +112,19 @@
                 document.getElementById('login-view').classList.add('hidden');
                 document.getElementById('app-view').classList.replace('hidden', 'flex');
                 conectarDB();
-            } else { alert("PIN de seguridad incorrecto."); }
+            } else { alert("PIN incorrecto"); }
         }
 
         function conectarDB() {
-            const status = document.getElementById('loading-status');
-            status.innerText = "Sincronizando Excel...";
-            
             Papa.parse(SHEET_URL, {
-                download: true,
-                header: true,
-                skipEmptyLines: true,
+                download: true, header: true, skipEmptyLines: true,
                 complete: function(results) {
                     const select = document.getElementById('producto-select');
                     select.innerHTML = '<option value="0" disabled selected>Seleccionar Producto...</option>';
-                    
                     results.data.forEach(item => {
                         const keys = Object.keys(item);
                         const colNombre = keys.find(k => k.toLowerCase().includes('articulo') || k.toLowerCase().includes('producto'));
                         const colValor = keys.find(k => k.toLowerCase().includes('valor') || k.toLowerCase().includes('precio'));
-
                         if(colNombre && colValor) {
                             const opt = document.createElement('option');
                             opt.value = String(item[colValor]).replace(/[^\d]/g, '');
@@ -168,7 +132,7 @@
                             select.appendChild(opt);
                         }
                     });
-                    status.innerText = "✓ Lista Actualizada";
+                    document.getElementById('loading-status').innerText = "✓ LISTA ACTUALIZADA";
                 }
             });
         }
@@ -179,32 +143,58 @@
             const financiar = valor - inicial;
             const tasa = (parseFloat(document.getElementById('interes').value) || 0) / 100;
             const meses = parseInt(document.getElementById('meses').value) || 0;
-            
-            let cuota = 0;
-            if (financiar > 0 && meses > 0) {
-                cuota = (tasa === 0) ? financiar / meses : financiar * ((tasa * Math.pow(1 + tasa, meses)) / (Math.pow(1 + tasa, meses) - 1));
-            }
-            
-            document.getElementById('res-financiar').innerText = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(financiar);
-            document.getElementById('res-cuota').innerText = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(cuota);
+            let cuota = (financiar > 0 && meses > 0) ? (tasa === 0 ? financiar / meses : financiar * ((tasa * Math.pow(1 + tasa, meses)) / (Math.pow(1 + tasa, meses) - 1))) : 0;
+            document.getElementById('res-financiar').innerText = formatCop(financiar);
+            document.getElementById('res-cuota').innerText = formatCop(cuota);
             document.getElementById('res-meses-txt').innerText = meses;
         }
 
-        ['valor', 'inicial', 'interes', 'meses'].forEach(id => document.getElementById(id).addEventListener('input', calcular));
+        function formatCop(n) { return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(n); }
         
+        ['valor', 'inicial', 'interes', 'meses'].forEach(id => document.getElementById(id).addEventListener('input', calcular));
         document.getElementById('producto-select').addEventListener('change', function() {
             document.getElementById('valor').value = this.value;
             calcular();
         });
 
+        // FUNCIÓN DESCARGAR PDF
+        function descargarPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const cliente = document.getElementById('cliente').value || "Cliente";
+            const prod = document.getElementById('producto-select').options[document.getElementById('producto-select').selectedIndex].text;
+
+            // Cabecera Negra
+            doc.setFillColor(0, 0, 0); doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(255); doc.setFontSize(22); doc.text("JOCO PLUS", 15, 25);
+            doc.setFontSize(10); doc.text(`Asesor: ${asesorActual}`, 195, 25, {align:'right'});
+
+            // Contenido
+            doc.autoTable({
+                startY: 50,
+                head: [['CONCEPTO', 'DETALLE']],
+                body: [
+                    ['CLIENTE', cliente.toUpperCase()],
+                    ['ARTÍCULO', prod],
+                    ['PRECIO VENTA', formatCop(document.getElementById('valor').value)],
+                    ['CUOTA INICIAL', formatCop(document.getElementById('inicial').value)],
+                    ['SALDO FINANCIADO', document.getElementById('res-financiar').innerText],
+                    ['PLAZO', `${document.getElementById('meses').value} Meses`],
+                    ['PAGO MENSUAL', document.getElementById('res-cuota').innerText]
+                ],
+                theme: 'striped', headStyles: { fillColor: [0, 0, 0] }
+            });
+
+            doc.save(`Cotizacion_JocoPlus_${cliente.replace(/\s/g, '_')}.pdf`);
+        }
+
+        // FUNCIÓN ENVIAR CORREO
         async function enviarPorGoogle() {
-            const btn = document.getElementById('btn-main');
             const email = document.getElementById('email-cliente').value;
-            if (!email.includes('@')) { alert("Por favor, ingresa un correo válido"); return; }
-            
-            btn.disabled = true;
-            btn.innerText = "Procesando...";
-            
+            if (!email.includes('@')) { alert("Ingresa un correo válido"); return; }
+            const btn = document.getElementById('btn-email');
+            btn.disabled = true; btn.innerText = "ENVIANDO...";
+
             const payload = {
                 email: email,
                 cliente: document.getElementById('cliente').value || "Cliente",
@@ -216,18 +206,10 @@
             };
 
             try {
-                // Modo 'no-cors' para evitar bloqueos del navegador con Google Scripts
-                await fetch(GOOGLE_SCRIPT_URL, { 
-                    method: 'POST', 
-                    mode: 'no-cors', 
-                    body: JSON.stringify(payload) 
-                });
-                alert("✅ ¡Éxito! La cotización ha sido enviada al correo.");
-            } catch (e) { 
-                alert("Error de conexión con el servidor."); 
-            }
-            btn.disabled = false;
-            btn.innerText = "📧 ENVIAR COTIZACIÓN OFICIAL";
+                await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+                alert("✅ ¡Éxito! Cotización enviada al correo.");
+            } catch (e) { alert("Error de servidor"); }
+            btn.disabled = false; btn.innerText = "📧 ENVIAR CORREO AUTOMÁTICO";
         }
     </script>
 </body>
