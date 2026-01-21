@@ -3,123 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JOCO PLUS | Cotizador Oficial</title>
-    
+    <title>JOCO PLUS - Cotizador Oficial</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; color: #0f172a; }
-        .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.3); }
-        .input-premium { @apply w-full p-4 bg-white border border-slate-200 rounded-2xl outline-none transition-all duration-200 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500; }
-        .btn-primary { @apply w-full bg-blue-600 text-white font-bold py-4 rounded-2xl transition-all active:scale-95 shadow-lg shadow-blue-500/20 hover:bg-blue-700 disabled:bg-slate-400; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
         .hidden { display: none !important; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        .animate-pulse-soft { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        .btn-enviar { transition: all 0.3s ease; }
+        .btn-enviar:active { transform: scale(0.98); }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="h-screen overflow-hidden flex flex-col">
 
-    <div id="login-view" class="flex-1 flex flex-col justify-center items-center p-6 bg-slate-900 relative">
-        <div class="bg-white p-10 rounded-[2.5rem] shadow-2xl w-full max-w-md z-10 border-b-8 border-blue-600">
-            <div class="text-center mb-10">
-                <div class="inline-flex items-center justify-center bg-blue-600 text-white w-16 h-16 rounded-2xl text-3xl font-extrabold italic mb-4">JP</div>
-                <h1 class="text-3xl font-extrabold tracking-tight">JOCO PLUS</h1>
-                <p class="text-slate-400 font-medium">Acceso Privado Asesores</p>
-            </div>
-            <div class="space-y-6">
-                <select id="user-select" class="input-premium appearance-none font-semibold text-slate-700">
+    <div id="login-view" class="flex-1 flex flex-col justify-center items-center p-4 bg-slate-900">
+        <div class="bg-white p-10 rounded-[2.5rem] shadow-2xl w-full max-w-sm text-center">
+            <div class="inline-block bg-black text-white px-4 py-2 rounded-lg text-2xl font-black mb-4 italic">JP</div>
+            <h1 class="text-3xl font-black mb-8 tracking-tighter">JOCO PLUS</h1>
+            <div class="space-y-4">
+                <select id="user-select" class="w-full p-4 border rounded-xl font-semibold outline-none focus:ring-2 focus:ring-blue-600">
                     <option value="" disabled selected>Seleccionar Asesor</option>
                     <option value="Jhonathan Cortavarria">Jhonathan Cortavarria</option>
                     <option value="Luis Cortavarria">Luis Cortavarria</option>
                     <option value="Nataly Cortavarria">Nataly Cortavarria</option>
                     <option value="Gleydis Rodriguez">Gleydis Rodriguez</option>
                 </select>
-                <input type="password" id="password-input" class="input-premium text-center tracking-[1em]" placeholder="PIN">
-                <button onclick="iniciarSesion()" class="btn-primary text-lg">ENTRAR</button>
+                <input type="password" id="password-input" class="w-full p-4 border rounded-xl text-center tracking-widest outline-none focus:ring-2 focus:ring-blue-600" placeholder="PIN">
+                <button onclick="iniciarSesion()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl hover:bg-blue-700">ENTRAR</button>
             </div>
         </div>
     </div>
 
-    <div id="app-view" class="hidden flex-1 flex flex-col h-screen overflow-hidden">
-        <nav class="bg-white border-b border-slate-100 px-8 py-4 flex justify-between items-center z-20">
-            <div class="flex items-center gap-3">
-                <div class="bg-slate-900 text-white px-3 py-1 rounded-lg font-extrabold italic">JP</div>
-                <h1 class="text-xl font-extrabold">JOCO PLUS</h1>
+    <div id="app-view" class="hidden h-full flex-col">
+        <nav class="bg-white border-b px-8 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div class="bg-black text-white px-2 py-1 rounded font-black italic">JP</div>
+                <span class="font-black tracking-tighter text-xl">JOCO PLUS</span>
             </div>
-            <div class="flex items-center gap-6">
-                <span id="loading-status" class="text-[10px] font-bold text-blue-500 uppercase animate-pulse-soft">Sincronizando...</span>
-                <button onclick="location.reload()" class="text-red-500 text-xs font-bold px-4 py-2 bg-red-50 rounded-xl">SALIR</button>
+            <div class="flex items-center gap-4">
+                <span id="loading-status" class="text-[10px] font-bold text-blue-500 uppercase tracking-widest animate-pulse">Sincronizando...</span>
+                <button onclick="location.reload()" class="text-red-500 text-xs font-bold uppercase hover:underline">Salir</button>
             </div>
         </nav>
 
-        <main class="flex-1 overflow-y-auto p-4 md:p-10 bg-slate-50">
-            <div class="max-w-6xl mx-auto grid lg:grid-cols-12 gap-8">
+        <main class="flex-1 overflow-auto p-6">
+            <div class="max-w-5xl mx-auto grid lg:grid-cols-12 gap-8">
                 
-                <div class="lg:col-span-7 space-y-6">
-                    <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
-                        <h2 class="text-xl font-extrabold mb-6">Datos de la Cotización</h2>
-                        <div class="grid gap-5">
-                            <div class="space-y-1">
-                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Producto</label>
-                                <select id="producto-select" class="input-premium font-bold text-slate-700"></select>
-                            </div>
-                            <div class="grid md:grid-cols-2 gap-4">
-                                <div class="space-y-1">
-                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Nombre Cliente</label>
-                                    <input type="text" id="cliente" class="input-premium" placeholder="Nombre completo">
-                                </div>
-                                <div class="space-y-1">
-                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email Cliente</label>
-                                    <input type="email" id="email-cliente" class="input-premium" placeholder="cliente@correo.com">
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="space-y-1">
-                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Precio Venta</label>
-                                    <input type="number" id="valor" class="input-premium bg-slate-50 font-black text-blue-600 border-none" readonly>
-                                </div>
-                                <div class="space-y-1">
-                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Cuota Inicial</label>
-                                    <input type="number" id="inicial" class="input-premium border-blue-100">
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="space-y-1">
-                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Interés %</label>
-                                    <input type="number" step="0.01" id="interes" class="input-premium" value="2.5">
-                                </div>
-                                <div class="space-y-1">
-                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Meses</label>
-                                    <input type="number" id="meses" class="input-premium" value="12">
-                                </div>
-                            </div>
+                <div class="lg:col-span-7 bg-white p-8 rounded-3xl shadow-sm space-y-6">
+                    <div>
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Artículo / Producto</label>
+                        <select id="producto-select" class="w-full mt-1 p-4 bg-gray-50 border-none rounded-2xl font-bold text-gray-700 focus:ring-2 focus:ring-blue-500 outline-none"></select>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Nombre del Cliente</label>
+                            <input type="text" id="cliente" class="w-full mt-1 p-4 border border-gray-100 rounded-2xl outline-none focus:border-blue-500" placeholder="Ej: Juan Pérez">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Correo del Cliente</label>
+                            <input type="email" id="email-cliente" class="w-full mt-1 p-4 border border-gray-100 rounded-2xl outline-none focus:border-blue-500" placeholder="cliente@correo.com">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Precio Venta</label>
+                            <input type="number" id="valor" class="w-full mt-1 p-4 bg-gray-100 rounded-2xl font-black text-blue-600 outline-none" readonly>
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Cuota Inicial</label>
+                            <input type="number" id="inicial" class="w-full mt-1 p-4 border border-gray-100 rounded-2xl outline-none focus:border-blue-500">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Interés Mensual %</label>
+                            <input type="number" step="0.01" id="interes" value="2.5" class="w-full mt-1 p-4 border border-gray-100 rounded-2xl outline-none focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Plazo (Meses)</label>
+                            <input type="number" id="meses" value="12" class="w-full mt-1 p-4 border border-gray-100 rounded-2xl outline-none focus:border-blue-500">
                         </div>
                     </div>
                 </div>
 
-                <div class="lg:col-span-5 space-y-6">
-                    <div class="bg-slate-900 text-white p-10 rounded-[2.5rem] shadow-2xl">
-                        <p class="text-blue-400 font-bold uppercase tracking-[0.2em] text-[10px] mb-6">Mensualidad Estimada</p>
-                        <p class="text-6xl font-extrabold italic tracking-tighter mb-10" id="res-cuota">$0</p>
-                        <div class="pt-8 border-t border-slate-800 flex justify-between">
+                <div class="lg:col-span-5 space-y-4">
+                    <div class="bg-gray-900 text-white p-10 rounded-[2.5rem] shadow-xl relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-6 opacity-10 font-black text-6xl">JP</div>
+                        <p class="text-xs text-gray-400 font-bold uppercase tracking-widest mb-2">Mensualidad estimada</p>
+                        <p class="text-5xl font-black italic text-blue-400 tracking-tighter" id="res-cuota">$ 0</p>
+                        <div class="mt-8 pt-6 border-t border-gray-800 flex justify-between">
                             <div>
-                                <p class="text-[9px] text-slate-500 uppercase font-black">Saldo Financiar</p>
-                                <p class="text-xl font-bold" id="res-financiar">$0</p>
+                                <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Financiado</p>
+                                <p class="text-lg font-bold" id="res-financiar">$ 0</p>
                             </div>
                             <div class="text-right">
-                                <p class="text-[9px] text-slate-500 uppercase font-black">Plazo</p>
-                                <p class="text-xl font-bold" id="res-meses-label">12 Meses</p>
+                                <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Meses</p>
+                                <p class="text-lg font-bold" id="res-meses-txt">12</p>
                             </div>
                         </div>
                     </div>
-                    <div class="space-y-3">
-                        <button onclick="gestionarEnvio(true)" id="btn-email" class="btn-primary flex items-center justify-center gap-3">📧 ENVIAR PDF AL CORREO</button>
-                        <button onclick="gestionarEnvio(false)" class="w-full bg-white text-slate-900 font-bold py-4 rounded-2xl border border-slate-200 hover:bg-slate-50 transition-all">📄 SÓLO DESCARGAR PDF</button>
+
+                    <button id="btn-main" onclick="enviarPorGoogle()" class="btn-enviar w-full bg-blue-600 text-white font-black py-5 rounded-2xl shadow-xl shadow-blue-500/30 flex items-center justify-center gap-3">
+                        <span class="text-xl">📧</span> ENVIAR COTIZACIÓN OFICIAL
+                    </button>
+                    
+                    <div class="p-4 bg-blue-50 rounded-xl border border-blue-100">
+                        <p class="text-[10px] text-blue-700 font-bold uppercase mb-1">Nota de automatización:</p>
+                        <p class="text-[10px] text-blue-600 leading-tight italic">Al hacer clic, el sistema generará los detalles y los enviará automáticamente desde tu robot de Google al correo del cliente.</p>
                     </div>
                 </div>
             </div>
@@ -127,14 +120,17 @@
     </div>
 
     <script>
-        const PUBLIC_KEY = "4OPAHHSKSoP9fdvKE";
-        const SERVICE_ID = "service_j6xofgm";
-        const TEMPLATE_ID = "template_kfzfdet";
+        // Tu URL de Google Script integrada
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxsxtstd3_8NDqB0rQ9xoXn9ZbEVlMkY2BBW_aiD3k-nXcQh_eJ7qg94jccYkx0awrP/exec";
         const SHEET_URL = "https://docs.google.com/spreadsheets/d/1BE1h5UZaWqFYMDWxY73z2bAzcriQMXx6pl677YF6kVo/export?format=csv";
-
-        emailjs.init(PUBLIC_KEY);
-
-        const asesores = { "Jhonathan Cortavarria": "1985", "Luis Cortavarria": "0000", "Nataly Cortavarria": "0219", "Gleydis Rodriguez": "1508" };
+        
+        const asesores = { 
+            "Jhonathan Cortavarria": "1985", 
+            "Luis Cortavarria": "0000", 
+            "Nataly Cortavarria": "0219", 
+            "Gleydis Rodriguez": "1508" 
+        };
+        
         let asesorActual = "";
 
         function iniciarSesion() {
@@ -143,9 +139,9 @@
             if (asesores[user] === pass) {
                 asesorActual = user;
                 document.getElementById('login-view').classList.add('hidden');
-                document.getElementById('app-view').classList.remove('hidden');
+                document.getElementById('app-view').classList.replace('hidden', 'flex');
                 conectarDB();
-            } else { alert("PIN Incorrecto"); }
+            } else { alert("PIN de seguridad incorrecto."); }
         }
 
         function conectarDB() {
@@ -154,7 +150,7 @@
                 download: true, header: true, skipEmptyLines: true,
                 complete: function(results) {
                     const select = document.getElementById('producto-select');
-                    select.innerHTML = '<option value="0">Seleccionar Producto...</option>';
+                    select.innerHTML = '<option value="0">--- Elegir Producto ---</option>';
                     results.data.forEach(item => {
                         if(item['ARTICULO NOMBRE']) {
                             const opt = document.createElement('option');
@@ -163,7 +159,7 @@
                             select.appendChild(opt);
                         }
                     });
-                    document.getElementById('loading-status').innerText = "✓ SINCRONIZADO";
+                    document.getElementById('loading-status').innerText = "✓ SISTEMA CONECTADO";
                 }
             });
         }
@@ -171,6 +167,7 @@
         ['valor', 'inicial', 'interes', 'meses'].forEach(id => {
             document.getElementById(id).addEventListener('input', calcular);
         });
+
         document.getElementById('producto-select').addEventListener('change', function() {
             document.getElementById('valor').value = this.value;
             calcular();
@@ -182,71 +179,61 @@
             const financiar = valor - inicial;
             const tasa = (parseFloat(document.getElementById('interes').value) || 0) / 100;
             const meses = parseInt(document.getElementById('meses').value) || 0;
+            
             let cuota = 0;
             if (financiar > 0 && meses > 0) {
                 cuota = tasa === 0 ? financiar / meses : financiar * ((tasa * Math.pow(1 + tasa, meses)) / (Math.pow(1 + tasa, meses) - 1));
             }
+            
             document.getElementById('res-financiar').innerText = formatCop(financiar);
             document.getElementById('res-cuota').innerText = formatCop(cuota);
-            document.getElementById('res-meses-label').innerText = `${meses} Meses`;
+            document.getElementById('res-meses-txt').innerText = meses;
         }
 
-        function formatCop(n) { return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(n); }
+        function formatCop(n) { 
+            return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(n); 
+        }
 
-        async function gestionarEnvio(esEmail) {
-            const { jsPDF } = window.jspdf;
-            const cliente = document.getElementById('cliente').value || "Cliente";
+        async function enviarPorGoogle() {
+            const btn = document.getElementById('btn-main');
             const email = document.getElementById('email-cliente').value;
+            const cliente = document.getElementById('cliente').value;
             const prodNombre = document.getElementById('producto-select').options[document.getElementById('producto-select').selectedIndex].text;
-            const cuotaValor = document.getElementById('res-cuota').innerText;
 
-            const doc = new jsPDF();
-            // PDF Header
-            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 45, 'F');
-            doc.setTextColor(255); doc.setFontSize(22); doc.setFont("helvetica", "bold"); doc.text("JOCO PLUS", 15, 25);
-            doc.setFontSize(10); doc.setFont("helvetica", "normal"); doc.text("COTIZACIÓN DE CRÉDITO", 15, 32);
-            doc.setFontSize(9); doc.text(`Fecha: ${new Date().toLocaleDateString()} | Asesor: ${asesorActual}`, 195, 25, {align: 'right'});
+            if (!email.includes('@')) { alert("Por favor, ingresa un correo válido."); return; }
+            if (!cliente) { alert("Por favor, ingresa el nombre del cliente."); return; }
 
-            doc.autoTable({
-                startY: 55,
-                head: [['DETALLE', 'VALOR']],
-                body: [
-                    ['PRODUCTO', prodNombre],
-                    ['PRECIO VENTA', formatCop(document.getElementById('valor').value)],
-                    ['CUOTA INICIAL', formatCop(document.getElementById('inicial').value)],
-                    ['SALDO FINANCIADO', document.getElementById('res-financiar').innerText],
-                    ['PLAZO', `${document.getElementById('meses').value} Meses`],
-                    ['PAGO MENSUAL', cuotaValor]
-                ],
-                theme: 'striped', headStyles: { fillColor: [15, 23, 42] }
-            });
+            btn.disabled = true;
+            btn.innerHTML = `<svg class="animate-spin h-5 w-5 text-white mr-2 inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> ENVIANDO...`;
 
-            if (esEmail) {
-                if (!email.includes('@')) { alert("Email inválido"); return; }
-                const btn = document.getElementById('btn-email');
-                btn.innerText = "ENVIANDO CON ADJUNTO..."; btn.disabled = true;
+            const payload = {
+                email: email,
+                cliente: cliente,
+                asesor: asesorActual,
+                producto: prodNombre,
+                cuota: document.getElementById('res-cuota').innerText,
+                financiar: document.getElementById('res-financiar').innerText,
+                meses: document.getElementById('meses').value,
+                interes: document.getElementById('interes').value
+            };
 
-                // Generar Base64 del PDF
-                const pdfBase64 = doc.output('datauristring').split(',')[1];
-
-                emailjs.send(SERVICE_ID, TEMPLATE_ID, {
-                    to_name: cliente,
-                    to_email: email, // Este campo debe ser {{to_email}} en EmailJS
-                    producto: prodNombre,
-                    cuota: cuotaValor,
-                    plazo: document.getElementById('meses').value,
-                    asesor: asesorActual,
-                    my_attachment: pdfBase64 // Este campo debe ser {{my_attachment}} en EmailJS (Attachments)
-                }).then(() => {
-                    alert("✅ Cotización enviada con éxito.");
-                    btn.innerText = "📧 ENVIAR PDF AL CORREO"; btn.disabled = false;
-                }).catch((err) => {
-                    alert("Error al enviar correo.");
-                    btn.disabled = false;
+            try {
+                // Fetch con mode 'no-cors' para Google Scripts
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    cache: 'no-cache',
+                    body: JSON.stringify(payload)
                 });
-            } else {
-                doc.save(`Cotizacion_JOCOPLUS_${cliente}.pdf`);
+                
+                alert("✅ ¡Excelente! La cotización ha sido procesada y enviada a " + email);
+            } catch (error) {
+                console.error(error);
+                alert("Hubo un error al intentar enviar. Por favor revisa la consola.");
             }
+            
+            btn.disabled = false;
+            btn.innerHTML = `<span class="text-xl">📧</span> ENVIAR COTIZACIÓN OFICIAL`;
         }
     </script>
 </body>
